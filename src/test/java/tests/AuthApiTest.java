@@ -31,4 +31,19 @@ public class AuthApiTest extends BaseTest {
                 .body("token_type", equalTo("bearer"));
     }
 
+    @Test
+    void loginWithInvalidCredentials_shouldReturnError () {
+        Map<String, String> loginBody = new HashMap<>();
+
+        loginBody.put("email", "customer@practicesoftwaretesting.com");
+        loginBody.put("password", "wrongpassword");
+
+        given()
+                .contentType("application/json")
+                .body(loginBody)
+                .when()
+                .post("/users/login")
+                .then().statusCode(401);
+    }
+
 }
