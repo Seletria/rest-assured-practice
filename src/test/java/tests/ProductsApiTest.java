@@ -1,13 +1,10 @@
 package tests;
 
 import base.BaseTest;
-import io.restassured.RestAssured;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.util.Locale;
-
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.*;
 
 public class ProductsApiTest extends BaseTest {
 
@@ -19,5 +16,18 @@ public class ProductsApiTest extends BaseTest {
                 .when()
                 .get("/products/{id}")
                 .then().statusCode(404);
+    }
+
+    @Test
+    void getProductsByCategory_shouldReturnFilteredProducts() {
+        given()
+                .queryParam("by_category", "01KVSYRW7GQSX627634VM6TQC7")
+                .when()
+                .get("/products")
+                .then()
+                    .statusCode(200)
+                    .body("data.size()", greaterThan(0))
+                    .body("data.category.id", everyItem(equalTo("01KVSYRW7GQSX627634VM6TQC7")));
+        ;
     }
 }
