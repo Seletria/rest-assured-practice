@@ -13,21 +13,22 @@ public class ProductsApiTest extends BaseTest {
 
         given()
                 .pathParam("id", "99999")
-                .when()
+        .when()
                 .get("/products/{id}")
-                .then().statusCode(404);
+        .then()
+                .statusCode(404);
     }
 
     @Test
     void getProductsByCategory_shouldReturnFilteredProducts() {
         given()
                 .queryParam("by_category", "01KVSYRW7GQSX627634VM6TQC7")
-                .when()
+        .when()
                 .get("/products")
-                .then()
-                    .statusCode(200)
-                    .body("data.size()", greaterThan(0))
-                    .body("data.category.id", everyItem(equalTo("01KVSYRW7GQSX627634VM6TQC7")));
+        .then()
+                .statusCode(200)
+                .body("data.size()", greaterThan(0))
+                .body("data.category.id", everyItem(equalTo("01KVSYRW7GQSX627634VM6TQC7")));
         ;
     }
 }
