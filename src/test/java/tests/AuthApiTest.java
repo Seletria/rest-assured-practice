@@ -1,6 +1,7 @@
 package tests;
 
 import base.BaseTest;
+import helper.RequestBodyHelper;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
@@ -14,14 +15,11 @@ public class AuthApiTest extends BaseTest {
 
     @Test
     void loginWithValidCredentials_shouldReturnToken() {
-        Map<String, String> loginBody = new HashMap<>();
-
-        loginBody.put("email", "customer@practicesoftwaretesting.com");
-        loginBody.put("password", "welcome01");
 
         given()
                 .contentType("application/json")
-                .body(loginBody)
+                .body(RequestBodyHelper.createLoginBody("customer@practicesoftwaretesting.com",
+                        "welcome01"))
         .when()
                 .post("/users/login")
         .then()
@@ -33,14 +31,11 @@ public class AuthApiTest extends BaseTest {
 
     @Test
     void loginWithInvalidCredentials_shouldReturnError () {
-        Map<String, String> loginBody = new HashMap<>();
-
-        loginBody.put("email", "customer@practicesoftwaretesting.com");
-        loginBody.put("password", "wrongpassword");
 
         given()
                 .contentType("application/json")
-                .body(loginBody)
+                .body(RequestBodyHelper.createLoginBody("customer@practicesoftwaretesting.com",
+                        "wrongpassword"))
                 .when()
                 .post("/users/login")
                 .then().statusCode(401);
