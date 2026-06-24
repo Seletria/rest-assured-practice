@@ -4,10 +4,8 @@ import base.BaseTest;
 import helper.RequestBodyHelper;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static io.restassured.RestAssured.given;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
@@ -24,9 +22,9 @@ public class AuthApiTest extends BaseTest {
                 .post("/users/login")
         .then()
                 .statusCode(200)
-//                .log().body();
                 .body("access_token", notNullValue())
-                .body("token_type", equalTo("bearer"));
+                .body("token_type", equalTo("bearer"))
+                .body(matchesJsonSchemaInClasspath("schemas/login-response-schema.json"));
     }
 
     @Test
