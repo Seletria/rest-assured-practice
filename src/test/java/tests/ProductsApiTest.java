@@ -1,6 +1,7 @@
 package tests;
 
 import base.BaseTest;
+import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
@@ -21,14 +22,21 @@ public class ProductsApiTest extends BaseTest {
 
     @Test
     void getProductsByCategory_shouldReturnFilteredProducts() {
+
+        Response categoriesResponse = given()
+                .when()
+                        .get("/products");
+
+        String categoryId = categoriesResponse.jsonPath().getString("data[0].category.id");
+
         given()
-                .queryParam("by_category", "01KVSYRW7GQSX627634VM6TQC7")
+                .queryParam("by_category", categoryId)
         .when()
                 .get("/products")
         .then()
                 .statusCode(200)
                 .body("data.size()", greaterThan(0))
-                .body("data.category.id", everyItem(equalTo("01KVSYRW7GQSX627634VM6TQC7")));
+                .body("data.category.id", everyItem(equalTo(categoryId)));
         ;
     }
 }
