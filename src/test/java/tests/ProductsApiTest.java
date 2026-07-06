@@ -54,13 +54,22 @@ public class ProductsApiTest extends BaseTest {
         updateBody.put("name", "Updated Name");
         updateBody.put("price", 99.99);
 
-        given()
+        given(authSpec)
                 .pathParam("id", productId)
-                .contentType(ContentType.JSON)
                 .body(updateBody)
         .when()
                 .put("/products/{id}")
-        .then().log().all();
+
+        .then()
+                .statusCode(200);
+
+        given()
+                .pathParam("id", productId)
+        .when()
+                .get("/products/{id}")
+        .then()
+                .body("name", equalTo("Updated Name"))
+                .body("price", equalTo(99.99f));
 
     }
 }
