@@ -21,6 +21,7 @@ public class AuthApiTest extends BaseTest {
         .when()
                 .post("/users/login")
         .then()
+                .log().all()
                 .statusCode(200)
                 .body("access_token", notNullValue())
                 .body("token_type", equalTo("bearer"))
