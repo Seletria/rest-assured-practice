@@ -13,6 +13,7 @@ API automation practice project built with Rest Assured, JUnit 5, and Maven.
 - [Installation](#installation)
 - [Running Tests](#running-tests)
 - [Features](#features)
+- [Key Learnings](#key-learnings)
 - [Future Improvements](#future-improvements)
 
 ---
@@ -101,7 +102,7 @@ mvn -Dtest=ProductsApiTest test
 ## Features
 
 - ✔ Authentication API Tests
-- ✔ Product API Tests
+- ✔ Product API Tests (GET, PUT — DELETE in progress)
 - ✔ JSON Schema Validation
 - ✔ Reusable BaseTest Architecture
 - ✔ Request Body Helper Methods
@@ -109,9 +110,17 @@ mvn -Dtest=ProductsApiTest test
 
 ---
 
+## Key Learnings
+
+While testing the PUT /products/{id} endpoint, I discovered that the response body only contains {"success": true} and does not echo back the updated fields. This confirmed that a 200 OK or success: true response does not guarantee that the data was actually persisted. To verify the update was real, I added a separate GET request after the PUT call and asserted that the returned name and price values matched the update.
+
+---
+
 ## Future Improvements
 
-- Add negative test scenarios
+- Complete DELETE test coverage, including idempotency scenarios
+- Reduce login request frequency to avoid triggering account lockout (423)
+- Explore contract testing for JWT expiration (`exp - iat` vs `expires_in`)
 - Add data-driven testing
 - Integrate Allure Reports
 - Add Docker support
