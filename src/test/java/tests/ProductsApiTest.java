@@ -1,7 +1,6 @@
 package tests;
 
 import base.BaseTest;
-import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 
@@ -12,6 +11,25 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
 public class ProductsApiTest extends BaseTest {
+
+    private void deleteProductAndExpectStatus(String productId, int expectedStatusCode) {
+        given(adminAuthSpec)
+                .pathParam("id", productId)
+        .when()
+                .delete("/products/{id}")
+        .then()
+                .statusCode(expectedStatusCode);
+    }
+
+    private void getProductAndExpectStatus(String productId, int expectedStatusCode) {
+        given(adminAuthSpec)
+                .pathParam("id", productId)
+        .when()
+                .get("/products/{id}")
+        .then()
+                .statusCode(expectedStatusCode);
+    }
+
 
     @Test
     void getNonExistingProduct_shouldReturn404 () {
@@ -72,4 +90,38 @@ public class ProductsApiTest extends BaseTest {
                 .body("price", equalTo(99.99f));
 
     }
+
+    @Test
+    void createAndDeleteProduct_shouldRemoveProductPermanently(){
+        Response productResponse = given().when().get("/products");
+        String categoryId = productResponse.jsonPath().getString("data[0].category.id");
+        String brandId = productResponse.jsonPath().getString("data[0].brand.id");
+        String imageId = productResponse.jsonPath().getString("data[0].product_image.id");
+
+        Map<String,Object> newProductBody = new HashMap<>();
+
+        newProductBody.put("name", "Test Product For Deletion");
+        newProductBody.put("description", "Created for delete test purposes");
+        newProductBody.put("price", 99.99);
+        newProductBody.put("category_id", categoryId);
+        newProductBody.put("brand_id", brandId);
+        newProductBody.put("product_image_id", imageId);
+        newProductBody.put("is_location_offer", 0);
+        newProductBody.put("is_rental", 0);
+        newProductBody.put("co2_rating", "A");
+
+        String newProductId =
+        given(adminAuthSpec)
+                .body(newProductBody)
+        .when()
+                .post("/products")
+        .then()
+                .statusCode(201)
+                .extract().path("id");
+
+        deleteProductAndExpectStatus(newProductId, 204);
+        getProductAndExpectStatus(newProductId, 404);
+        deleteProductAndExpectStatus(newProductId, 404);
+    }
+
 }

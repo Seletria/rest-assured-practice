@@ -13,6 +13,8 @@ import static io.restassured.RestAssured.given;
 public class BaseTest {
 
     protected static RequestSpecification authSpec;
+    protected static RequestSpecification adminAuthSpec;
+
     @BeforeAll
     static void setUp() {
         Locale.setDefault(Locale.US);
@@ -30,6 +32,20 @@ public class BaseTest {
 
         authSpec = new RequestSpecBuilder()
                 .addHeader("Authorization", "Bearer " + token)
+                .setContentType("application/json")
+                .build();
+
+        String adminToken = given()
+                .contentType("application/json")
+                .body(RequestBodyHelper.createLoginBody("admin@practicesoftwaretesting.com", "welcome01"))
+                .when()
+                .post("/users/login")
+                .then()
+                .statusCode(200)
+                .extract().path("access_token");
+
+        adminAuthSpec = new RequestSpecBuilder()
+                .addHeader("Authorization", "Bearer " + adminToken)
                 .setContentType("application/json")
                 .build();
     }
